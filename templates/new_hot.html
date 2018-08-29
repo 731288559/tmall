@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style>a{text-decoration:none}</style>
+	<head>
+		<title>热销新品列表</title>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">  
+		<script type = "text/javascript" src = "static/js/echarts.min.js" ></script >
+		<script src = "static/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<b>{{ query_date_1 }} to {{ query_date_2 }}</b>
+		<br>
+		<a href="./new_hot?week_offset={{ week_offset|add:-1 }}">前一周</a>
+		<a href="./new_hot?week_offset={{ week_offset|add:1 }}">后一周</a>
+		<br>
+		{% for j in shops %}
+		<b>{{ j.shop_title }}</b>
+		<table class="table table-striped">
+			<thead>
+			<tr>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th>总销量</th>
+			</tr>
+			</thead>
+			{% for i in j.new_items %}
+			<tbody>
+			<tr>
+				<td>{{ i.item_id }}</td>
+				<td><a  target="_blank" href="https://detail.tmall.com/item.htm?id={{ i.item_id }}">{{ i.item_title }}</a></td>
+				<td>{{ i.item_sold }}</td>
+			</tr>
+			</tbody>
+			{% endfor %}
+		</table>
+		{% endfor %}
+	</body>
+</html>

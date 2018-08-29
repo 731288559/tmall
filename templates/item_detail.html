@@ -1,0 +1,133 @@
+
+
+<html>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<head>
+		<title>商品详情</title>
+		<script type="text/javascript" src="static/js/echarts.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script type = "text/javascript" src = "static/js/echarts.min.js" ></script >
+		<script src = "static/js/bootstrap.min.js"></script>
+
+	</head>
+	<body>
+		<br>
+		<a href="./shops">返回商店列表</a>
+		<a href="#" onClick="javascript :history.go(-1);">返回上一页</a>
+		<br>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>商店编号</th>
+					<th>商品编号</th>
+					<th>商品名称</th>
+					<th>月销量</th>
+					<th>总销量</th>
+					<th>价格</th>
+					<th>查询时间</th>
+					<th>昨日销量</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in item_detail %}
+				<tr>
+					<td>{{ i.shop_id }}</td>
+					<td>{{ i.item_id }}</td>
+					<td><a href="https://detail.tmall.com/item.htm?id={{ i.item_id }}">{{ i.title }}</a></td>
+					<td>{{ i.sold }}</td>
+					<td>{{ i.totalSoldQuantity }}</td>
+					<td>{{ i.price }}</td>
+					<td>{{ i.insert_date }}</td>
+					<td>{{ i.y_sold }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<div id="c1" style="width: 1000px;height:400px;"></div>
+		<div id="c2" style="width: 1000px;height:400px;"></div>
+		<script type="text/javascript">
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('c1'));
+			// 指定图表的配置项和数据
+			var x_d = {{ time_all|safe }}
+			var y_d = {{ sold_all|safe }}
+			for(var i=0;i<x_d.length;i++)
+			{	
+				var newDate = new Date();
+				newDate.setTime(x_d[i]*1000);
+				x_d[i] = newDate.toDateString();
+			}
+			var option = {
+				title: {
+					text: '总销量变化图'
+				},
+				tooltip: {},
+				legend: {
+					data:['总销量']
+				},
+				xAxis: {
+					data:x_d
+				},
+				yAxis: {
+					type: 'value',
+					scale: true,
+					name: '总销量',
+					max: function(value) {
+						return Math.ceil(value.max/1000)*1000;
+					},
+					min: function(value) {
+						return Math.floor(value.min/1000)*1000;
+					},
+					splitNumber:7
+				},
+				series: [{
+					name: '总销量',
+					type: 'line',
+					data:y_d
+				}]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+			myChart = echarts.init(document.getElementById('c2'));
+			for(var i=y_d.length-1;i>0;i--){
+				y_d[i]=y_d[i]-y_d[i-1];
+			}
+			y_d[0]=0;
+			var option = {
+				title: {
+					text: '日销量变化图'
+				},
+				tooltip: {},
+				legend: {
+					data:['日销量']
+				},
+				xAxis: {
+					data:x_d.slice(0,x_d.length-1)
+				},
+				yAxis: {
+					type: 'value',
+					scale: true,
+					name: '日销量',
+					max: function(value) {
+						return Math.ceil(value.max/100)*100;
+					},
+					min: function(value) {
+						return Math.floor(value.min/100)*100;
+					},
+					splitNumber:7
+				},
+				series: [{
+					name: '日销量',
+					type: 'bar',
+					data:y_d.slice(1)
+				}]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+					</script>
+
+				</body>
+			</html>
+

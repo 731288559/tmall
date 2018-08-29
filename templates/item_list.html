@@ -1,0 +1,61 @@
+
+<html>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<head>
+		<title>商品列表</title>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+                <script type = "text/javascript" src = "static/js/echarts.min.js" ></script >
+                <script src = "static/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<b>{{ shop_title }}</b>
+		<br>
+		<span>查询时间: <b>{{ item_lists.0.insert_date }}</b></span>
+		<br>
+		<a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset|add:-1 }}&shop_title={{ shop_title }}&sort={{ sort }}">前一天</a>
+		{% ifequal day_offset '0' %}
+		    <a href="javascript:;">后一天</a>
+		{% else %}
+		<a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset|add:1 }}&shop_title={{ shop_title }}&sort={{ sort }}">后一天</a>
+		{% endifequal %}
+		<a href="./shops">返回商店列表</a>
+		<br>
+		<table class="table table-striped">
+			<thead>
+			<tr>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th><a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset }}&shop_title={{ shop_title }}&sort=m">月销量</a></th>
+				<th><a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset }}&shop_title={{ shop_title }}&sort=t">总销量</a></th>
+				<th><a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset }}&shop_title={{ shop_title }}&sort=p">价格</a></th>
+				<th><a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset }}&shop_title={{ shop_title }}&sort=d">日销量</a></th>
+				<th><a href="./item_list?shop_id={{ shop_id }}&day_offset={{ day_offset }}&shop_title={{ shop_title }}&sort=d_s">日销售额</a></th>
+				<th>日销量等级</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for i in item_lists %}
+			<tr>
+				<td><a href="./item_detail?item_id={{ i.item_id }}">{{ i.item_id }}</a></td>
+				<td><a href="https://detail.tmall.com/item.htm?id={{ i.item_id }}">{{ i.title }}</a></td>
+				<td>{{ i.sold }}</td>
+				<td>{{ i.totalSoldQuantity }}</td>
+				<td>{{ i.price }}</td>
+				<td>{{ i.y_sold }}</td>
+				<td>{% widthratio i.price 1 i.y_sold %}</td>
+				{% if i.y_sold >= 1000 %}
+				<td>🌟🌟🌟</td>
+				{% elif i.y_sold >= 600 %}
+				<td>🌟🌟</td>
+				{% elif i.y_sold >= 100 %}
+				<td>🌟</td>
+				{% else %}
+				<td></td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</body>
+</html>
+

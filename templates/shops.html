@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style>a{text-decoration:none}</style>
+	<head>
+		<title>商店列表</title>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">  
+		<script type = "text/javascript" src = "static/js/echarts.min.js" ></script >
+		<script src = "static/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<br>
+		<br>
+		<table class="table table-striped">
+			<thead>
+			<tr>
+				<th>商店编号</th>
+				<th>商店名称</th>
+				<th>商店URL</th>
+			</tr>
+			</thead>
+			{% for i in shop_list %}
+			<tbody>
+			<tr>
+				<td><a href="./item_list?shop_id={{ i.shop_id }}&day_offset=0&shop_title={{ i.shop_title }}" text-decoration:none>{{ i.shop_id }}</a></td>
+				<td><a href="./shops?shop_id={{ i.shop_id }}&shop_title={{ i.shop_title }}">{{ i.shop_title }}</a></td>
+				<td>{{ i.shop_url }}</td>
+			</tr>
+			</tbody>
+			{% endfor %}
+		</table>
+		<b>{{ shop_title }}</b>
+		<div id="c1" style="width: 1000px;height:400px;"></div>
+		<div id="c2" style="width: 1000px;height:400px;"></div>
+		<div id="c3" style="width: 1000px;height:400px;"></div>
+		<div id="c4" style="width: 1000px;height:400px;"></div>
+		    <script type="text/javascript">
+			var myChart = echarts.init(document.getElementById('c1'));
+			var time = {{ time_all|safe }}
+			var total_solds = {{ total_solds|safe }}
+			var total_sales = {{ total_sales|safe }}
+
+			var sold_change = new Array(total_solds.length-1); 
+			var sale_change = new Array(total_sales.length-1);
+			for(var i=0;i<total_solds.length-1;i++){
+				sold_change[i] = total_solds[i+1]-total_solds[i]
+				sale_change[i] = total_sales[i+1]-total_sales[i]
+			}
+	                for(var i=0;i<time.length;i++)
+				{       
+				var newDate = new Date();
+				newDate.setTime(time[i]*1000);
+				time[i] = newDate.toDateString();
+				}
+			var option = {
+			    title: {
+				text: '总销量变化'
+			    },
+			    tooltip: {},
+			    legend: {
+				data:['总销量']
+			    },
+			    xAxis: {
+				data: time
+			    },
+			    yAxis: {
+				    type: 'value',
+				      scale: true,
+				      name: '销量',
+				    max: function(value) {
+						    return Math.ceil(value.max/1000)*1000;
+						},
+				      min: function(value) {
+						    return Math.floor(value.min/1000)*1000;
+						},
+				      splitNumber:7
+			    },
+			    series: [{
+				name: '销量',
+				type: 'line',
+				data: total_solds
+			    }
+			    ]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+
+			myChart = echarts.init(document.getElementById('c2'));
+                        var option = {
+                            title: {
+                                text: '日销量变化'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data:['日销量']
+                            },
+                            xAxis: {
+                                data: time.slice(0,time.length-1)
+                            },
+                            yAxis: {
+                                type: 'value',
+                                      scale: true,
+                                      name: '',
+                                    max: function(value) {
+                                                    return Math.ceil(value.max/1000)*1000;
+                                                },
+                                      min: function(value) {
+                                                    return Math.floor(value.min/1000)*1000 ;
+                                                },
+                                      splitNumber:7
+                            },
+                            series: [{
+                                name: '日销量',
+                                type: 'bar',
+                                data: sold_change
+                            }
+                            ]
+                        };
+                        myChart.setOption(option);
+
+			myChart = echarts.init(document.getElementById('c3'));
+			var option = {
+                            title: {
+                                text: '总销售额变化'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data:['总销售额']
+                            },
+                            xAxis: {
+                                data: time
+                            },
+                            yAxis: {
+				type: 'value',
+                                      scale: true,
+                                      name: '总销售额',
+                                    max: function(value) {
+                                                    return Math.ceil(value.max/10000)*10000;
+                                                },
+                                      min: function(value) {
+                                                    return Math.floor(value.min/10000)*10000 ;
+                                                },
+                                      splitNumber:7
+			    },
+                            series: [{
+                                name: '总销售额',
+                                type: 'line',
+                                data: total_sales
+                            }
+                            ]
+                        };
+			myChart.setOption(option);
+			
+			myChart = echarts.init(document.getElementById('c4'));
+                        var option = {
+                            title: {
+                                text: '日销售额变化'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data:['日销售额']
+                            },
+                            xAxis: {
+                                data: time.slice(0,time.length-1)
+                            },
+                            yAxis: {
+                                type: 'value',
+                                      scale: true,
+                                      name: '日销售额',
+                                    max: function(value) {
+                                                    return Math.ceil(value.max/10000)*10000;
+                                                },
+                                      min: function(value) {
+                                                    return Math.floor(value.min/10000)*10000 ;
+                                                },
+                                      splitNumber:7
+                            },
+                            series: [{
+                                name: '日销售额',
+                                type: 'bar',
+                                data: sale_change
+                            }
+                            ]
+                        };
+                        myChart.setOption(option);
+		    </script>
+	</body>
+</html>
+
